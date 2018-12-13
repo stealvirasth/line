@@ -61,6 +61,42 @@ class Talk(object):
         return self.talk.getLastOpRevision()
 
     """Message"""
+    @loggedIn
+
+    def generateReplyMessage(self, relatedMessageId):
+
+        msg = Message()
+
+        msg.relatedMessageServiceCode = 1
+
+        msg.messageRelationType = 3
+
+        msg.relatedMessageId = str(relatedMessageId)
+
+        return msg
+
+    @loggedIn
+
+    def sendReplyMessage(self, relatedMessageId, to, text, contentMetadata={}, contentType=0):
+
+        msg = self.generateReplyMessage(relatedMessageId)
+
+        msg.to = to
+
+        msg.text = text
+
+        msg.contentType = contentType
+
+        msg.contentMetadata = contentMetadata
+
+        if to not in self._messageReq:
+
+            self._messageReq[to] = -1
+
+        self._messageReq[to] += 1
+
+        return self.talk.sendMessage(self._messageReq[to], msg)
+
 
     @loggedIn
     def sendMessage(self, to, text, contentMetadata={}, contentType=0):
